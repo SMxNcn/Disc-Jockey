@@ -18,17 +18,15 @@ public class SongTimeSliderWidget extends AbstractSliderButton {
         return builder.toString();
     }
 
-    private static String formatTimestamp(int seconds) {
+    public static String formatTimestamp(int seconds) {
         return padZeroes(seconds / 60) + ":" + padZeroes(seconds % 60);
     }
 
     @Override
     protected void updateMessage() {
-        if (Main.SONG_PLAYER.song == null) {
-            setMessage(Component.empty());
-        } else {
-            setMessage(Component.literal(formatTimestamp((int) Main.SONG_PLAYER.getSongElapsedSeconds()) + " / " + formatTimestamp((int) Main.SONG_PLAYER.song.getLengthInSeconds())));
-        }
+        // The bar itself stays unlabelled: the screen draws elapsed and total time below it,
+        // scaled by the current playback speed.
+        setMessage(Component.empty());
     }
 
     @Override

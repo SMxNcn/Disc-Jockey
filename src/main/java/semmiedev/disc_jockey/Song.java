@@ -18,6 +18,9 @@ public class Song {
     public SongListWidget.SongEntry entry;
     public String searchableRelativePath, searchableName;
 
+    /** Lyrics paired from a .lrc file next to the song, or null when there is none. */
+    public Lyrics lyrics;
+
     @Override
     public String toString() {
         return displayName;

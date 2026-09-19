@@ -14,6 +14,7 @@ import semmiedev.disc_jockey.gui.screen.DiscJockeyScreen;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -221,19 +222,26 @@ public class DiscjockeyCommand {
 
                         .then(literal("loop")
                                 .executes(context -> {
-                                    context.getSource().sendFeedback(Component.translatable(Main.MOD_ID + ".loop_status", Main.SONG_PLAYER.loopSong ? "yes" : "no"));
+                                    context.getSource().sendFeedback(Component.translatable(Main.MOD_ID + ".loop_status",
+                                            Component.translatable(Main.MOD_ID + ".screen.repeat." + PlaylistManager.mode().name().toLowerCase(Locale.ROOT))));
                                     return 1;
                                 })
                                 .then(literal("yes")
                                     .executes(context -> {
-                                        Main.SONG_PLAYER.loopSong = true;
+                                        PlaylistManager.setMode(Config.RepeatMode.SINGLE);
                                         context.getSource().sendFeedback(Component.translatable(Main.MOD_ID + ".loop_enabled"));
                                         return 1;
                                     }))
                                 .then(literal("no")
                                     .executes(context -> {
-                                        Main.SONG_PLAYER.loopSong = false;
+                                        PlaylistManager.setMode(Config.RepeatMode.SEQUENTIAL);
                                         context.getSource().sendFeedback(Component.translatable(Main.MOD_ID + ".loop_disabled"));
+                                        return 1;
+                                    }))
+                                .then(literal("playlist")
+                                    .executes(context -> {
+                                        PlaylistManager.setMode(Config.RepeatMode.PLAYLIST);
+                                        context.getSource().sendFeedback(Component.translatable(Main.MOD_ID + ".loop_playlist_enabled"));
                                         return 1;
                                     }))
                         )
