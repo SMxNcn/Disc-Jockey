@@ -34,6 +34,7 @@ public class Main implements ClientModInitializer {
     public static final ArrayList<ClientTickEvents.StartLevelTick> TICK_LISTENERS = new ArrayList<>();
     public static final Previewer PREVIEWER = new Previewer();
     public static final SongPlayer SONG_PLAYER = new SongPlayer();
+    public static final PlaylistManager PLAYLIST = new PlaylistManager();
 
     public static File songsFolder;
     public static Config config;
@@ -43,6 +44,9 @@ public class Main implements ClientModInitializer {
     public void onInitializeClient() {
         configHolder = AutoConfig.register(Config.class, JanksonConfigSerializer::new);
         config = configHolder.getConfig();
+        PlaylistManager.syncPlayerState();
+        LyricsPlayer.register();
+        LyricsChat.register();
 
         songsFolder = new File(FabricLoader.getInstance().getConfigDir() + File.separator + MOD_ID + File.separator + "songs");
         if (!songsFolder.isDirectory()) songsFolder.mkdirs();

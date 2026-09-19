@@ -233,6 +233,7 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                     int last100MsReducePacketsAfter = 300 / 10;
                     if ((lastLookSentAt == -1L || now - lastLookSentAt >= 50) && last100MsSpanEstimatedPackets < last100MsReducePacketsAfter && (reducePacketsUntil == -1L || reducePacketsUntil < now)) {
                         client.getConnection().send(new ServerboundMovePlayerPacket.Rot(Mth.wrapDegrees((float) (Mth.atan2(unit.z, unit.x) * 57.2957763671875) - 90.0f), Mth.wrapDegrees((float) (-(Mth.atan2(unit.y, Math.sqrt(unit.x * unit.x + unit.z * unit.z)) * 57.2957763671875))), true, false));
+                        PacketRateMeter.count();
                         last100MsSpanEstimatedPackets++;
                         lastLookSentAt = now;
                     } else if (last100MsSpanEstimatedPackets >= last100MsReducePacketsAfter){
@@ -243,6 +244,7 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                         // TODO: 5/30/2022 Check if the block needs tuning
                         //client.interactionManager.attackBlock(blockPos, Direction.UP);
                         client.player.connection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, blockPos, Direction.UP, 0));
+                        PacketRateMeter.count();
                         last100MsSpanEstimatedPackets++;
                     } else if (last100MsSpanEstimatedPackets >= last100MsStopPacketsAfter) {
                         Main.LOGGER.info("Stopping all packets for a bit!");
@@ -251,12 +253,14 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                     }
                     if (last100MsSpanEstimatedPackets < last100MsReducePacketsAfter && (reducePacketsUntil == -1L || reducePacketsUntil < now)) {
                         client.player.connection.send(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.ABORT_DESTROY_BLOCK, blockPos, Direction.UP, 0));
+                        PacketRateMeter.count();
                         last100MsSpanEstimatedPackets++;
                     } else if (last100MsSpanEstimatedPackets >= last100MsReducePacketsAfter){
                         reducePacketsUntil = Math.max(reducePacketsUntil, now + 500);
                     }
                     if ((lastSwingSentAt == -1L || now - lastSwingSentAt >= 50) &&last100MsSpanEstimatedPackets < last100MsReducePacketsAfter && (reducePacketsUntil == -1L || reducePacketsUntil < now)) {
                         client.submit(() -> client.player.swing(InteractionHand.MAIN_HAND));
+                        PacketRateMeter.count();
                         lastSwingSentAt = now;
                         last100MsSpanEstimatedPackets++;
                     } else if (last100MsSpanEstimatedPackets  >= last100MsReducePacketsAfter){
@@ -505,6 +509,7 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                 int assumedNote = notePredictions.containsKey(blockPos) ? notePredictions.get(blockPos).assumedNote() : client.level.getBlockState(blockPos).getValue(BlockStateProperties.NOTE);
                 notePredictions.put(blockPos, new NotePrediction((assumedNote + 1) % 25, System.currentTimeMillis() + ping * 2L + 100));
                 client.gameMode.useItemOn(client.player, InteractionHand.MAIN_HAND, new BlockHitResult(Vec3.atCenterOf(blockPos), Direction.UP, blockPos, false));
+                PacketRateMeter.count();
                 lastInteractAt = System.currentTimeMillis();
                 availableInteracts -= 1f;
                 lastBlockPos = blockPos;
@@ -513,6 +518,7 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                 // Turn head into spinning with time and lookup up further the further tuning is progressed
                 //client.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(((float) (System.currentTimeMillis() % 2000)) * (360f/2000f), (1 - roughTuneProgress) * 180 - 90, true));
                 client.player.swing(InteractionHand.MAIN_HAND);
+                PacketRateMeter.count();
             }
         } else if ((playbackThread == null || !playbackThread.isAlive()) && running && Main.config.disableAsyncPlayback) {
             // Sync playback (off by default). Replacement for playback thread
