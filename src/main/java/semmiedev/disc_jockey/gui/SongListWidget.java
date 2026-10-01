@@ -1,5 +1,6 @@
 package semmiedev.disc_jockey.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -98,7 +99,7 @@ public class SongListWidget extends ObjectSelectionList<SongListWidget.ListEntry
 
         @Override
         public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-            if (event.button() != 0) return false;
+            if (event.button() != InputConstants.MOUSE_BUTTON_LEFT) return false;
             openDirectory.accept(relativePath);
             return true;
         }
@@ -200,7 +201,7 @@ public class SongListWidget extends ObjectSelectionList<SongListWidget.ListEntry
             if (songListWidget.onSelectionChanged != null) songListWidget.onSelectionChanged.run();
             // Double clicking plays the song right away, matching the play button, which treats
             // a song list selection as one-shot playback rather than a playlist position.
-            if (doubleClick && event.button() == 0) PlaylistManager.playOneShot(song);
+            if (doubleClick && event.button() == InputConstants.MOUSE_BUTTON_LEFT) PlaylistManager.playOneShot(song);
             return true;
         }
 

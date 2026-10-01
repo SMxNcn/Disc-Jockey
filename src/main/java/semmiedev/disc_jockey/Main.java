@@ -1,5 +1,6 @@
 package semmiedev.disc_jockey;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigHolder;
 import me.shedaniel.autoconfig.serializer.JanksonConfigSerializer;
@@ -20,7 +21,6 @@ import net.minecraft.resources.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jspecify.annotations.NonNull;
-import org.lwjgl.glfw.GLFW;
 import semmiedev.disc_jockey.gui.hud.BlocksOverlay;
 import semmiedev.disc_jockey.gui.screen.DiscJockeyScreen;
 
@@ -53,7 +53,7 @@ public class Main implements ClientModInitializer {
 
         SongLoader.loadSongs();
 
-        KeyMapping openScreenKeyBind = KeyMappingHelper.registerKeyMapping(new KeyMapping(MOD_ID + ".key_bind.open_screen", GLFW.GLFW_KEY_J, KeyMapping.Category.MISC));
+        KeyMapping openScreenKeyBind = KeyMappingHelper.registerKeyMapping(new KeyMapping(MOD_ID + ".key_bind.open_screen", InputConstants.KEY_J, KeyMapping.Category.MISC));
 
         ClientTickEvents.START_CLIENT_TICK.register(new ClientTickEvents.StartTick() {
             private ClientLevel prevLevel;

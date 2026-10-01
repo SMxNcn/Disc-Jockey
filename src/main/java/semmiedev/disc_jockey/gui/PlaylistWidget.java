@@ -1,5 +1,6 @@
 package semmiedev.disc_jockey.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -141,7 +142,7 @@ public class PlaylistWidget extends ObjectSelectionList<PlaylistWidget.PlaylistE
             if (widget.onSelectionChanged != null) widget.onSelectionChanged.run();
             // Double clicking a row switches straight to that song. PlaylistManager#play stops
             // whatever is running first, so this works both while playing and while idle.
-            if (doubleClick && event.button() == 0) PlaylistManager.play(song);
+            if (doubleClick && event.button() == InputConstants.MOUSE_BUTTON_LEFT) PlaylistManager.play(song);
             return true;
         }
 

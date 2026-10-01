@@ -12,9 +12,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.protocol.game.ServerboundPunchPacket;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -259,7 +261,11 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
                         reducePacketsUntil = Math.max(reducePacketsUntil, now + 500);
                     }
                     if ((lastSwingSentAt == -1L || now - lastSwingSentAt >= 50) &&last100MsSpanEstimatedPackets < last100MsReducePacketsAfter && (reducePacketsUntil == -1L || reducePacketsUntil < now)) {
-                        client.submit(() -> client.player.swing(InteractionHand.MAIN_HAND));
+                        client.submit(() -> {
+                            client.player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
+                            // In 26.3 the local animation no longer sends the punch packet.
+                            client.player.connection.send(ServerboundPunchPacket.INSTANCE);
+                        });
                         PacketRateMeter.count();
                         lastSwingSentAt = now;
                         last100MsSpanEstimatedPackets++;
@@ -517,7 +523,8 @@ public class SongPlayer implements ClientTickEvents.StartLevelTick {
             if (lastBlockPos != null) {
                 // Turn head into spinning with time and lookup up further the further tuning is progressed
                 //client.getNetworkHandler().sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(((float) (System.currentTimeMillis() % 2000)) * (360f/2000f), (1 - roughTuneProgress) * 180 - 90, true));
-                client.player.swing(InteractionHand.MAIN_HAND);
+                client.player.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT, false);
+                client.player.connection.send(ServerboundPunchPacket.INSTANCE);
                 PacketRateMeter.count();
             }
         } else if ((playbackThread == null || !playbackThread.isAlive()) && running && Main.config.disableAsyncPlayback) {
